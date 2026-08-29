@@ -8,7 +8,8 @@ Monday/Wednesday/Friday 1:50-2:50 AM
 Olin 305
 
 **Google Classroom:** I will use Google Classroom throughout the semester to
-share assignment due dates and details about exams, and track your grade.
+share assignment due dates, to share details about exams, and to track your
+grade.
 
 **GitHub:** I will use GitHub to share assignments.
 
@@ -16,11 +17,15 @@ share assignment due dates and details about exams, and track your grade.
 [these](https://ourplcc.github.io/course-materials-ng/dev/) informal notes.
 
 **Tool:** Demonstrations, activities, and assignments will use
-[PLCC-ng](https://ourplcc.github.io/plcc-ng/2.0/), a compiler compiler.
+[PLCC](https://ourplcc.github.io/plcc-ng/2.0/), a compiler compiler, along
+with a preexisting set of
+[languages](https://github.com/ourPLCC/languages-ng/tree/v1.0.0) implemented
+using PLCC.
 
 ## Teacher information
 
 Professor: Alain Kägi  
+Pronouns: He/him  
 Email: alaink@lclark.edu  
 Office hours:
 * Mondays & Wednesdays 12:00 - 1 PM, Olin 226B
@@ -96,17 +101,27 @@ Grade            | Point Range
 **F**            |  0-61
 
 Note that I may adjust your final grade in the class up or down in light of your
-participation, attendance, and overall commitment to the class. The grade of “B”
-reflects work that is normally done thoughtfully and thoroughly by students. The
-grade of “A” is earned by students who consistently do outstanding work and who
-show an unusually strong commitment to being active participants in the learning
-experience.
+participation, attendance, and overall commitment to the class.
 
 ## Grading
 
-* Assignments: 30%
-* Midterms: 30%
-* Final exam: 40%
+* Assignments: 25%
+* Midterm exam 1: 25%
+* Midterm exam 2: 25%
+* Final exam: 25%
+
+Assignments are 25% of your grade and considerably more than 25% of your
+learning. That weight is deliberate. An assignment grade cannot tell me whether
+you did the work or whether something did it for you, so I have assigned weights
+where I can actually see what you know. Do an assignment for what it teaches
+you, not for what it is worth.
+
+**Replacement rule.** If your score on the final exam is higher than your score
+on your lower midterm, that midterm score is replaced by your final exam score.
+This substitution happens automatically and you do not need to request it. The
+material in this course builds, so demonstrating late in the term that you have
+mastered earlier material counts for something. This policy applies only to
+exams you have taken; a missed exam is governed by the Attendance Policy.
 
 ## Helpful tips
 
@@ -160,9 +175,11 @@ topics beyond computer science.
 **Attendance.** Attendance is key to master the topics covered in this course.
 Participation in discussion and activities will help gain that proficiency.
 If you must miss a class for any reason, please obtain information about the
-the missed class from your classmates. Missing the midterm or final exam
-disadvantages not only you, but also your classmates and me. Therefore, make-up
-exams will only be given for very serious circumstances.
+the missed class from your classmates. Missing an exam disadvantages not only
+you but also your classmates and me. Make-up exams will only be given for
+serious circumstances. In any event, if you will miss an exam, you must contact
+me ***before*** the exam to schedule a makeup exam or alternate
+assessment. Therefore, 
 
 **Accommodations.** Please see me if there are accommodations that could help
 you learn more effectively in this class or if you are experiencing barriers to
@@ -171,6 +188,29 @@ documentation through the
 [Office of Student Accessibility](https://www.lclark.edu/offices/student-accessibility/).
 If you plan to take exams in the Office of Student Accessibility, please
 schedule with them and let me know well in advance of the exam.
+
+**Exams.** Exams assess your knowledge of concepts, terminology, and your
+ability to reason about topics introduced in class. There are 2 midterm exams
+and a final exam. Each exam covers the materials since the last exam. Exams are
+closed-computer, closed-book, and closed-note.
+
+**Assignments.** A homework assignment will be due about every other week.
+Homework assignments provide you with an opportunity to apply and to deepen your
+understanding of the course material. Discussing strategies and roadblocks with
+your classmates is encouraged, and so is using AI in the ways described under
+*AI and Your Learning*. The last homework assignment is graded for completeness
+only, not for correctness. It carries the same weight as every other assignment.
+Rather than returning individual feedback on it, I will release solutions before
+the review session for the final exam, so you can check your own work while
+preparing. A separate [document](./grading.md) describes how I grade
+assignments.
+
+**Late Work Policy.** Generally assignments are due on Friday of the week they
+are due. You may complete an assignment up to 72 hours (3 days) after its due
+date without penalty; so, the grace period typically ends on the following
+Monday. Assignments will be accepted up to 1 week late, but correctness is not
+checked and earns no credit — only completeness does. This caps a late
+submission at roughly half credit. After one week late, work will not be accepted and receives a 0
 
 **Course withdrawals.** You may drop this course on WebAdvisor by Friday of the
 second week of class and no W grade will appear on your transcript. After the
@@ -183,17 +223,37 @@ will need to complete the course and take whatever grade you have earned. If
 you have questions or concerns about your performance in the course, please talk
 with me before **November 6th**.
 
+**AI and your learning.** ***You may use AI tools on assignments. You may not
+use them on exams.*** That is the whole rule. The difference between its two
+halves matters more than it may appear. Assignments are the only chance you get
+to work through these ideas yourself, at your own pace, with time to be confused
+and to recover. Lecture cannot give you that, and an exam certainly cannot. An
+AI that produces a finished assignment for you may genuinely save you work — but
+it also wastes your one opportunity to learn the material. The practical
+consequence arrives in December. Three quarters of your grade comes from exams
+you take without help of any kind. Used differently, AI can genuinely help:
+Explaining a concept a second way, getting you unstuck, generating extra
+practice, quizzing you on material you think you already know. These uses are
+encouraged. The library’s
+[Generative Artificial Intelligence](https://library.lclark.edu/ai) is a
+reasonable place to start if you want to use these tools well.
+
 **Academic integrity.** Academic integrity is an essential part of learning.
 Plagiarism, cheating, or the deliberate misrepresentation of information will
 result in failure of this course. Please avoid any behavior that may be
 reasonably viewed as suspicious. Remember that helping a classmate to cheat
 counts as cheating. If you have any questions about the use of generative AI
-technology (e.g., ChatGPT) or plagiarism boundaries or about what type of
-material you can access while working on an assignment, please see me before you
-turn in your work. If you have any questions or concerns about academic
-honesty, please come see me or refer to Lewis & Clark’s
+technology or plagiarism boundaries or about what type of material you can
+access while working on an assignment, please see me before you turn in your
+work. If you have any questions or concerns about academic honesty, please come
+see me or refer to Lewis & Clark’s
 [Academic Integrity Policy](https://docs.lclark.edu/undergraduate/policiesprocedures/academicintegrity/).
 
 **Other.** All college policies govern this course. Please see the
 [Undergraduate Catalog](https://college.lclark.edu/catalog/) for any issues not
 covered in this syllabus.
+
+**Changes to this syllabus.** This syllabus and these policies are subject to
+change as deemed necessary by the instructor. Changes to this document will be
+announced in class and on Google classroom. A revised syllabus will be posted to
+Google classroom and the GitHub class repository.
