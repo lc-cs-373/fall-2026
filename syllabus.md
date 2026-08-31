@@ -205,12 +205,13 @@ the review session for the final exam, so you can check your own work while
 preparing. A separate [document](./grading.md) describes how I grade
 assignments.
 
-**Late Work Policy.** Generally assignments are due on Friday of the week they
+**Late work policy.** Generally assignments are due on Friday of the week they
 are due. You may complete an assignment up to 72 hours (3 days) after its due
 date without penalty; so, the grace period typically ends on the following
 Monday. Assignments will be accepted up to 1 week late, but correctness is not
 checked and earns no credit — only completeness does. This caps a late
-submission at roughly half credit. After one week late, work will not be accepted and receives a 0
+submission at roughly half credit. After one week late, work will not be
+accepted and receives a 0.
 
 **Course withdrawals.** You may drop this course on WebAdvisor by Friday of the
 second week of class and no W grade will appear on your transcript. After the
