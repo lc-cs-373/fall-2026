@@ -496,8 +496,6 @@ alongside `spec.plcc` — both of those are graded.
       skipped work under **Completeness**.
 - [ ] `q3/spec.plcc` — your finished specification from step 9.
 - [ ] `q3/extra.plcc` — your step 10 specification, with the `NUM` rule.
-- [ ] You ran `save`. **Nothing is submitted until you have**, and it is safe
-      to run as often as you like.
 
 `output`, `output_extra`, and `trace.txt` are scratch files. Leaving them in
 place costs you nothing.
