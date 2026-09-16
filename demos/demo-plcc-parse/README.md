@@ -1,0 +1,367 @@
+# CS 373 - Demo: `plcc-parse`, grammars, and the parse tree
+
+## What it is for
+
+We worked through this in class. This is the same thing with the tool in front
+of you, so you can run it yourself instead of watching me run it.
+
+The two ideas it is built around — **recursion with an empty alternative**, and
+**the classes a grammar defines** — are the ones everything after this leans on.
+You will write grammars of your own soon enough. Play with them here first, where
+being wrong is free.
+
+If you have not done the scanner demo yet, do that one first:
+`demos/demo-plcc-scan`. This one picks up where it stops.
+
+## Before you run anything — be in the right directory
+
+Every command below assumes that is where your terminal is:
+
+```bash
+cd demos/demo-plcc-parse
+```
+
+Three things depend on it, and all three fail in confusing ways rather than
+obvious ones:
+
+- **`-s spec.plcc` is a relative path.** From anywhere else, that file does not
+  exist and you get an error about the specification, not about your directory.
+- **`plcc-ng/` is written into whatever directory you run from.** It is the build
+  cache, and it belongs next to the specification it was built from.
+- **The sticky `-s` is remembered inside that `plcc-ng/`**, so a different
+  directory remembers a different specification.
+
+If a command surprises you, check `pwd` before you check anything else.
+
+## The files
+
+| File         | What it is |
+| --- | --- |
+| `spec.plcc`  | Comma-separated numbers, lexical **and** syntactic. The default. |
+| `cap.plcc`   | `spec.plcc` with one character changed. Section 2. |
+| `empty.plcc` | `spec.plcc`, extended so the empty list is legal too. |
+| `ll1.plcc`   | The obvious grammar. PLCC refuses it. Section 5. |
+| `rep.plcc`   | The whole thing in one line. Section 7. |
+| `input.txt`  | `1, 2, 3` in a file. |
+
+`-s` points `plcc-parse` at a specification other than `spec.plcc`.
+
+> **`-s` is sticky.** Once you pass it, it is remembered for later commands
+> until you change it. So after `-s cap.plcc`, a bare `plcc-parse` still uses
+> `cap.plcc` — not `spec.plcc`. Pass `-s` explicitly every time below and it
+> cannot surprise you.
+
+## 1 — Run it, and read the tree
+
+`spec.plcc` has two sections now, separated by a `%`. The first is a lexical
+specification exactly like the ones you wrote in A1. The second is new:
+
+```
+<List>          ::= <NUM> <ListTail>
+<ListTail:Some> ::= COMMA <NUM> <ListTail>
+<ListTail:Zero> ::=
+```
+
+Read each rule out loud as a sentence: *"a List is a NUM followed by a
+ListTail."* The notation is the only genuinely new thing here, and it stops
+being strange once you have said it a few times.
+
+```console
+$ echo "1, 2, 3" | plcc-parse -s spec.plcc
+List
+  NUM '1' [-:1:1]
+  Some
+    NUM '2' [-:1:4]
+    Some
+      NUM '3' [-:1:7]
+      Zero (empty)
+```
+
+`[-:1:1]` is the same **source:line:column** you read off `plcc-scan`.
+
+> **One wrinkle worth knowing.** `plcc-scan` prints the filename when you hand
+> it a file. `plcc-parse` prints `-` either way — try `plcc-parse -s spec.plcc
+> input.txt` and look. Nothing is wrong; the two tools just disagree, and it
+> matters only if you ever try to diff parser output the way A1 step 9 diffed
+> scanner output.
+
+## 2 — Where did the commas go?
+
+Look at that tree again. **There is no `COMMA` anywhere in it** — and yet the
+grammar says `<ListTail:Some> ::= COMMA <NUM> <ListTail>`, so a comma had to be
+there or the parse would have failed.
+
+`cap.plcc` is `spec.plcc` with **one character changed**: `COMMA` became
+`<COMMA>`.
+
+```console
+$ echo "1, 2, 3" | plcc-parse -s cap.plcc
+List
+  NUM '1' [-:1:1]
+  Some
+    COMMA ',' [-:1:2]
+    NUM '2' [-:1:4]
+    Some
+      COMMA ',' [-:1:5]
+      NUM '3' [-:1:7]
+      Zero (empty)
+```
+
+**Angle brackets mean *keep it*. Bare means *require it, then throw it away*.**
+
+You have met this idea before. In A1, `skip` versus `token` was *matched, then
+not emitted*. This is *matched, then not kept*. Both times the thing has to be
+in the input; both times you choose whether it survives into the next phase.
+
+### The part that actually matters: *why* you would keep one and not the other
+
+The syntax is easy. Deciding **which symbols are worth keeping** is the real
+skill, and there is a test for it:
+
+> **How many different lexemes could this token match?**
+
+`NUM` matches `1`, `42`, `9999` — many. So if I tell you *"I matched a NUM,"*
+your very next question is **"which one?"** The token name alone does not tell
+you what you need.
+
+`COMMA` matches `,` and nothing else. If I tell you *"I matched a COMMA,"* you
+have **no further questions**. The name already told you everything.
+
+**Keep the ones you would still have questions about.** Later, when you write
+semantics — the code that gives a program meaning — it will need the actual
+digits that `NUM` matched in order to do anything with them. It will never need
+to ask what the comma was.
+
+That is why punctuation usually goes bare: commas, semicolons, parentheses,
+keywords like `then` and `do`. They have exactly one possible lexeme each. They
+have to *be there* for the input to be legal, and once that is checked they have
+nothing left to say.
+
+## 3 — Recursion, and the rule with nothing on the right
+
+`<ListTail>` mentions `<ListTail>`. That is how a grammar describes a list of
+any length without knowing the length in advance.
+
+`<ListTail:Zero> ::=` has **nothing after the `::=`**, and that is legal. It is
+the base case — it is the `Zero (empty)` at the bottom of every tree above,
+where the list stopped.
+
+One number, one level:
+
+```console
+$ echo "1" | plcc-parse -s spec.plcc
+List
+  NUM '1' [-:1:1]
+  Zero (empty)
+```
+
+No numbers at all:
+
+```console
+$ printf "" | plcc-parse -s spec.plcc
+plcc-parser-table: -:1:1: error: unexpected end of file, no production for 'List'
+```
+
+`<List> ::= <NUM> <ListTail>` demands at least one number, so the empty list is
+not in this language. `empty.plcc` fixes that by splitting `<List>` the same
+way `<ListTail>` was split:
+
+```
+<List:LSome>    ::= <NUM> <ListTail>
+<List:LZero>    ::=
+```
+
+```console
+$ printf "" | plcc-parse -s empty.plcc
+LZero (empty)
+```
+
+Notice the root node is called `LZero`, not `List`. A node is named for the
+**alternative** that matched, and now that `<List>` has alternatives, that
+applies at the top of the tree too — the same rule you already saw give you
+`Some` and `Zero`.
+
+**The same pattern, applied twice.** That is the technique, not a special case.
+
+## 4 — Read to the end of the output
+
+```console
+$ echo "1," | plcc-parse -s spec.plcc
+List
+  NUM '1' [-:1:1]
+  Some
+    COMMA ',' [-:1:2]
+plcc-parser-table: -:1:2: error: expected 'NUM', got end of file
+```
+
+It printed part of a tree **and then failed**. `plcc-parse` streams the tree as
+it goes, so **a tree appearing does not mean the parse succeeded** — the answer
+is on the last line, not the first.
+
+Two things to notice in that output, because together they are confusing:
+
+- The parse failed, but you still got tree lines.
+- `COMMA ','` shows up **even though `spec.plcc` writes `COMMA` bare**. The
+  streaming output prints tokens as it consumes them; the *finished* tree in
+  section 1 prints only what was captured. Both are true and they are not in
+  conflict.
+
+**The error message is the thing to read**, and it is the last line rather than
+the first. This one gives you three facts: *where* it stopped (`-:1:2`), what it
+*wanted* (`'NUM'`), and what it *got* (end of file). That is enough to fix
+either the input or the grammar.
+
+**Every failure prints one.** There is no such thing as a silent failure here,
+so if you read to the bottom and there is no error, it parsed.
+
+So the habit is simply: **run it, read all of it, look at the last line.**
+
+## 5 — A grammar that is right, and still refused
+
+Why write `<ListTail>` at all? Why not just say a list is a number, or a number
+and a comma and a list? That is `ll1.plcc`, and it describes the same language:
+
+```
+<List:Only> ::= <NUM>
+<List:More> ::= <NUM> COMMA <List>
+```
+
+```console
+$ echo "1, 2, 3" | plcc-parse -s ll1.plcc
+plcc-make: error: grammar is not LL(1)
+
+LL(1) conflict: <List> on lookahead NUM
+
+  All of these productions apply:
+    <List> ::= <NUM> COMMA <List>
+    <List> ::= <NUM>
+
+  This is a FIRST/FIRST conflict: all productions start with NUM, so
+  the parser cannot choose between them.
+
+  Tip: left-factor the common prefix:
+    <List> ::= <NUM> <ListTail>
+    <ListTail> ::= COMMA <List>
+    <ListTail> ::=    (empty)
+```
+
+**LL(1)** means the parser reads Left to right, builds a Leftmost derivation,
+and gets **1** token of lookahead. Standing at `1`, with both rules starting
+`<NUM>`, it cannot tell which rule it is in without looking past the number —
+and it is not allowed to look.
+
+**Left-factoring** is the fix: pull the shared prefix out, put the difference in
+a new non-terminal. That is where `<ListTail>` came from. The grammar in
+`spec.plcc` is this one, repaired.
+
+Read that error message closely. When you hit this writing a grammar of your
+own — and you will — it tells you what to do.
+
+## 6 — See the classes your grammar defines
+
+`plcc-diagram` draws pictures of a specification:
+
+```console
+$ plcc-diagram -s spec.plcc
+plcc-ng/diagram/class.png
+plcc-ng/diagram/syntax.png
+```
+
+Open `plcc-ng/diagram/class.png`. In Codespaces, click the file in the
+Explorer and it opens in a tab.
+
+The class diagram is the useful one here. It shows that your grammar does not
+just accept or reject input — **it defines a set of classes**, and the parse
+tree is those objects. From `spec.plcc` you get a `List` holding a `Token` and
+a `ListTail`; `ListTail` is *abstract*, with `Some` and `Zero` extending it.
+
+Match it against the grammar line by line:
+
+- one class per rule, named by the left-hand side, or by the part after the
+  colon when there is one
+- one field per **captured** symbol — the `<>` ones from section 2. `Zero` has
+  no fields because its rule has no symbols at all.
+- field names are the symbol name in camelCase: `<NUM>` becomes `num`,
+  `<ListTail>` becomes `listTail`
+- several rules with the same left-hand side make the left-hand side abstract
+  and each alternative a subclass
+
+**Going from a grammar rule to its class and fields, by hand, is the skill
+here** — the diagram is how you check yourself, not a substitute for being able
+to do it. Run `plcc-diagram` on a rule you are unsure about and see.
+
+> **If `syntax.png` says *Syntax error!*, it is not your fault.** That happens
+> for grammars with an empty alternative — `spec.plcc`, `cap.plcc`, and
+> `empty.plcc` — and it is a bug in how PLCC writes the drawing, not a problem
+> with your specification. The class diagram beside it is still correct, and so
+> is your grammar. The fix has been sent upstream, so depending on when your
+> container was built you may find it already works; either way, the class
+> diagram is the one this section is about, and `rep.plcc` in the next section
+> draws correctly regardless.
+
+> `plcc-diagram` renders over the network, so it needs a working connection.
+> Everything else in this demo runs locally.
+
+## 7 — The same language in one line
+
+`rep.plcc` replaces all three rules with one:
+
+```
+<List> **= <NUM> +COMMA
+```
+
+`**=` means *repeat*, and `+COMMA` names the separator between repetitions.
+
+```console
+$ echo "1, 2, 3" | plcc-parse -s rep.plcc
+List
+  NUM '1' [-:1:1]
+  NUM '2' [-:1:4]
+  NUM '3' [-:1:7]
+```
+
+**Flat, not nested.** The recursion is gone from the tree — three numbers side
+by side under one `List`, which is usually what you wanted anyway. And the
+empty list comes free:
+
+```console
+$ printf "" | plcc-parse -s rep.plcc
+List
+```
+
+This one's syntax diagram works, and it is worth looking at — the repetition is
+drawn as an actual loop:
+
+```console
+$ plcc-diagram -s rep.plcc
+```
+
+So why did we do it the hard way first? `**=` is shorthand for exactly the
+recursion in section 3, and shorthand you cannot expand is hard to debug when a
+grammar does not do what you expected. **Be able to write the long form before
+you reach for the short one.**
+
+## Now break it yourself
+
+No answers below, and nothing to hand in. Predict first, then run.
+
+- In `spec.plcc`, put `<ListTail:Zero>` **above** `<ListTail:Some>`. Does the
+  order of alternatives matter the way the order of token rules did in A1?
+- Add a `SEMI` token and make the list end with a semicolon. Does the semicolon
+  belong in the tree, or not? Write it both ways and look.
+- Change `<ListTail:Some>` to `<ListTail:Some> ::= COMMA <List>` — dropping the
+  separate `<NUM>`. Does it still parse `1, 2, 3`? Is it still LL(1)?
+- Make a grammar for a list of numbers with **no** separator at all, so `1 2 3`
+  parses. Then try `**=` with no `+` and compare.
+- Write two rules with the same left-hand side that start with the same token,
+  on purpose, and read the LL(1) error. Then fix it by left-factoring.
+  **If you use the same token twice on one right-hand side, name the copies** —
+  `<NUM:left> PLUS <NUM:right>` — or you get a *duplicate RHS symbol name* error
+  instead, which is a different complaint and not the one you were after.
+- Run `plcc-diagram` on `empty.plcc`, then on `rep.plcc`. Both describe a
+  possibly-empty list of numbers. How do the two class diagrams differ, and
+  which one matches the shape of the tree each actually produces?
+- Now break a grammar on purpose and run `plcc-diagram` on it. You get no
+  picture at all — not a partial one. Worth knowing why: the diagram is drawn
+  from a grammar that already passed, so when something is wrong the error
+  message is the only tool you have. That is the normal case, not a failure.
