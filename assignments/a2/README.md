@@ -141,10 +141,6 @@ How this is scored is the same as A1: [grading.md](../../grading.md), three
 criteria, nine points. The **core concepts** listed above are what Correctness
 looks at.
 
-When you are done, run `save` from anywhere in your repository. **Your work is
-not submitted until `save` has run.** It is safe to run as often as you like.
-
-
 ## QUESTION 1 — A rule is a class
 
 `q1/spec.plcc` is a complete specification for a language that means nothing.
