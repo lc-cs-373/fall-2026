@@ -124,7 +124,7 @@ plcc-ng/diagram/class.png
 plcc-ng/diagram/syntax.png
 ```
 
-Open `plcc-ng/diagram/class.png` (in Codespaces, click it in the Explorer).
+Open `plcc-ng/diagram/class.png`.
 `List` has fields `num` and `listTail`. `ListTail` is abstract; `Some` and
 `Zero` extend it. `Zero` has no fields.
 

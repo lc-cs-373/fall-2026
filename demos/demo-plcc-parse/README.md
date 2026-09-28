@@ -267,8 +267,7 @@ plcc-ng/diagram/class.png
 plcc-ng/diagram/syntax.png
 ```
 
-Open `plcc-ng/diagram/class.png`. In Codespaces, click the file in the
-Explorer and it opens in a tab.
+Open `plcc-ng/diagram/class.png`.
 
 The class diagram is the useful one here. It shows that your grammar does not
 just accept or reject input — **it defines a set of classes**, and the parse
